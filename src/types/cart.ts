@@ -1,14 +1,13 @@
-export interface Product {
-  id: string
-  name: string
-  price: number
-  imageUrl: string
-  description: string
-  quantity?: number
+import { Product } from '@/data/products'
+
+export type { Product }
+
+export interface CartItem extends Product {
+  quantity: number
 }
 
 export interface CartStore {
-  items: Product[]
+  items: CartItem[]
   totalItems: number
   totalPrice: number
   addItem: (product: Product) => void

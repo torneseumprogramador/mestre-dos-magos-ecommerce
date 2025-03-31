@@ -1,35 +1,43 @@
 'use client'
 
-import Link from 'next/link'
-
-const categories = [
-  { name: 'Cartas Raras', href: '/loja/cartas-raras', color: 'primary-yellow' },
-  { name: 'Decks', href: '/loja/decks', color: 'primary-cyan' },
-  { name: 'Boosters', href: '/loja/boosters', color: 'primary-blue' },
-  { name: 'Acessórios', href: '/loja/acessorios', color: 'secondary-purple' },
-]
+import { useState } from 'react'
+import { categories } from '@/data/categories'
 
 export default function Sidebar() {
+  const [selectedCategory, setSelectedCategory] = useState('todos')
+
   return (
-    <aside className="w-64 bg-background/50 p-4 rounded-lg shadow-magic">
-      <h2 className="text-primary-yellow text-2xl font-bold mb-6">CATEGORIAS</h2>
-      <nav className="space-y-3">
-        {categories.map((category) => (
-          <Link
-            key={category.name}
-            href={category.href}
-            className={`
-              block px-4 py-2 rounded-lg
-              bg-${category.color}/20 hover:bg-${category.color}/30
-              text-${category.color} font-semibold
-              transition-all duration-200
-              hover:translate-x-1 hover:shadow-neon
-            `}
-          >
-            {category.name}
-          </Link>
-        ))}
-      </nav>
-    </aside>
+    <div className="bg-primary rounded-2xl p-4">
+      <h2 className="text-xl font-black mb-4 text-accent-yellow">
+        CATEGORIAS
+      </h2>
+
+      <div className="space-y-1">
+        {categories.map((category) => {
+          const Icon = category.icon
+          const isSelected = selectedCategory === category.id
+
+          return (
+            <button
+              key={category.id}
+              onClick={() => setSelectedCategory(category.id)}
+              className={`
+                relative w-full p-2
+                flex items-center gap-2
+                rounded-lg text-sm
+                transition-all
+                ${isSelected 
+                  ? `bg-accent-${category.id === 'todos' ? 'orange' : category.id === 'cartas' ? 'cyan' : category.id === 'livros' ? 'purple' : category.id === 'tabuleiros' ? 'pink' : 'yellow'} text-primary font-black`
+                  : 'text-gray-300 hover:text-white hover:bg-background'
+                }
+              `}
+            >
+              <Icon className="w-4 h-4" />
+              <span>{category.name}</span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
   )
 } 

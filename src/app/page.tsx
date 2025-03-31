@@ -1,100 +1,82 @@
 'use client'
 
-import Sidebar from '@/components/Sidebar'
-import ProductCard from '@/components/ProductCard'
-import Link from 'next/link'
 import { useCartStore } from '@/store/cartStore'
-
-// Dados mockados para exemplo
-const featuredProducts = [
-  {
-    id: '1',
-    name: 'Carta Mágica Rara',
-    price: 20.00,
-    imageUrl: '/images/products/carta-magica.jpg',
-    description: 'Uma carta mágica poderosa com efeitos únicos.'
-  },
-  {
-    id: '2',
-    name: 'Kit de Cartas',
-    price: 45.00,
-    imageUrl: '/images/products/kit-cartas.jpg',
-    description: 'Kit completo com cartas especiais para iniciantes.'
-  },
-  {
-    id: '3',
-    name: 'Jogo de Tabuleiro',
-    price: 150.00,
-    imageUrl: '/images/products/tabuleiro.jpg',
-    description: 'Jogo de tabuleiro mágico com peças especiais.'
-  },
-  {
-    id: '4',
-    name: 'Pacote de Cartas',
-    price: 30.00,
-    imageUrl: '/images/products/pacote-cartas.jpg',
-    description: 'Pacote com cartas aleatórias e chance de itens raros.'
-  },
-]
+import { products } from '@/data/products'
+import ProductCard from '@/components/ProductCard'
+import Sidebar from '@/components/Sidebar'
+import { ShoppingCart } from 'lucide-react'
+import Link from 'next/link'
+import Image from 'next/image'
+import Header from '@/components/Header'
 
 export default function Home() {
-  const totalItems = useCartStore((state) => state.totalItems)
+  const totalItems = useCartStore((state) => 
+    state.items.reduce((acc, item) => acc + item.quantity, 0)
+  )
 
   return (
-    <div className="flex gap-8">
-      {/* Sidebar */}
-      <Sidebar />
-
-      {/* Conteúdo Principal */}
-      <div className="flex-1">
-        {/* Banner Principal */}
-        <div className="relative h-64 mb-8 rounded-lg overflow-hidden shadow-magic">
-          <div className="absolute inset-0 bg-gradient-to-r from-primary-purple to-primary-blue opacity-75" />
-          <div className="absolute inset-0 flex items-center justify-center text-center p-8">
-            <div>
-              <h1 className="text-4xl font-bold text-primary-yellow mb-4">
-                Bem-vindo ao Templo dos Magos
-              </h1>
-              <p className="text-xl text-white">
-                Descubra o poder das cartas mágicas e jogos místicos
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Grade de Produtos */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {featuredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              {...product}
-            />
-          ))}
-        </div>
-
-        {/* Botão Ver Carrinho (fixo na parte inferior) */}
-        {totalItems > 0 && (
-          <div className="fixed bottom-8 right-8">
-            <Link
-              href="/carrinho"
-              className="
-                px-6 py-3 rounded-full
-                bg-primary-yellow text-background
-                font-bold text-lg
-                shadow-neon hover:shadow-magic
-                transform transition-all duration-300
-                hover:scale-105 active:scale-95
-                flex items-center gap-2
-              "
-            >
-              Ver Carrinho
-              <span className="bg-background text-primary-yellow rounded-full w-6 h-6 flex items-center justify-center text-sm">
-                {totalItems}
-              </span>
-            </Link>
-          </div>
-        )}
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <div className="container mx-auto px-4 py-4">
+        <Header />
       </div>
+
+      <div className="container mx-auto px-4">
+        <div className="flex gap-8">
+          {/* Sidebar */}
+          <aside className="w-64 flex-shrink-0">
+            <Sidebar />
+          </aside>
+
+          {/* Main Content */}
+          <main className="flex-1">
+            {/* Banner */}
+            <div className="relative w-full h-48 mb-8 rounded-2xl overflow-hidden">
+              <Image
+                src="/images/banner.jpg"
+                alt="Banner Templo dos Magos"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary/90 to-transparent" />
+              <div className="absolute bottom-6 left-6">
+                <h1 className="text-3xl font-black mb-2">
+                  <span className="text-accent-yellow">TEMPLO</span>{' '}
+                  <span className="text-accent-cyan">DOS MAGOS</span>
+                </h1>
+                <p className="text-gray-200 text-sm">
+                  Descubra itens mágicos únicos e poderosos para suas aventuras
+                </p>
+              </div>
+            </div>
+
+            {/* Products Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 gap-4">
+              {products.map((product) => (
+                <ProductCard key={product.id} {...product} />
+              ))}
+            </div>
+          </main>
+        </div>
+      </div>
+
+      {/* Fixed Cart Button */}
+      {totalItems > 0 && (
+        <Link
+          href="/carrinho"
+          className="
+            fixed bottom-8 right-8
+            bg-primary text-white
+            p-4 rounded-full
+            transform transition-all duration-300
+            hover:scale-110 hover:shadow-lg
+            flex items-center gap-2
+          "
+        >
+          <ShoppingCart className="w-6 h-6 text-accent-yellow" />
+          <span className="font-bold text-accent-cyan">{totalItems}</span>
+        </Link>
+      )}
     </div>
   )
 } 

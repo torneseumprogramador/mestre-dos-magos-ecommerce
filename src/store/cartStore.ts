@@ -2,6 +2,20 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 import { CartStore, Product } from '@/types/cart'
 
+interface CartItem extends Product {
+  quantity: number
+}
+
+interface CartStore {
+  items: CartItem[]
+  totalItems: number
+  totalPrice: number
+  addItem: (product: Product) => void
+  removeItem: (productId: string) => void
+  updateQuantity: (productId: string, quantity: number) => void
+  clearCart: () => void
+}
+
 export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
@@ -16,7 +30,7 @@ export const useCartStore = create<CartStore>()(
           if (existingItem) {
             const updatedItems = state.items.map((item) =>
               item.id === product.id
-                ? { ...item, quantity: (item.quantity || 1) + 1 }
+                ? { ...item, quantity: item.quantity + 1 }
                 : item
             )
             return {
@@ -53,14 +67,14 @@ export const useCartStore = create<CartStore>()(
             const oldQuantity = item.quantity || 1
             const quantityDiff = quantity - oldQuantity
             
-            return { ...item, quantity }
+            return { ...item, quantity: Math.max(0, quantity) }
           })
 
           const item = state.items.find((item) => item.id === productId)
           if (!item) return state
 
           return {
-            items: updatedItems,
+            items: updatedItems.filter((item) => item.quantity > 0),
             totalItems: state.totalItems + (quantity - (item.quantity || 1)),
             totalPrice: state.totalPrice + (item.price * (quantity - (item.quantity || 1))),
           }
